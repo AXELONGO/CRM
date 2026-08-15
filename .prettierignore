@@ -1,0 +1,8 @@
+.next/
+coverage/
+drizzle/
+node_modules/
+pnpm-lock.yaml
+test-results/
+playwright-report/
+docs/security/sbom.cdx.json

@@ -1,0 +1,1 @@
+-- The composite event key is included in 0009 before its foreign keys.

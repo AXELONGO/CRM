@@ -1,0 +1,52 @@
+services:
+  postgres:
+    image: postgres:17-alpine
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: crm_dev
+      POSTGRES_USER: crm_migration
+      POSTGRES_PASSWORD: crm_migration_password
+    ports:
+      - "5432:5432"
+    volumes:
+      - crm-postgres-data:/var/lib/postgresql/data
+      - ./scripts/postgres/01-roles.sql:/docker-entrypoint-initdb.d/01-roles.sql:ro
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U crm_migration -d crm_dev"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+  postgres-test:
+    image: postgres:17-alpine
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: crm_test
+      POSTGRES_USER: crm_test_migration
+      POSTGRES_PASSWORD: crm_test_migration_password
+    ports:
+      - "5433:5432"
+    volumes:
+      - crm-postgres-test-data:/var/lib/postgresql/data
+      - ./scripts/postgres/01-roles.sql:/docker-entrypoint-initdb.d/01-roles.sql:ro
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U crm_test_migration -d crm_test"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+  mailpit:
+    image: axllent/mailpit:v1.30.7
+    restart: unless-stopped
+    ports:
+      - "1025:1025"
+      - "8025:8025"
+    healthcheck:
+      test: ["CMD", "wget", "--spider", "--quiet", "http://127.0.0.1:8025/api/v1/info"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+volumes:
+  crm-postgres-data:
+  crm-postgres-test-data:

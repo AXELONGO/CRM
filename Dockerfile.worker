@@ -1,0 +1,21 @@
+FROM node:24.19.0-bookworm-slim AS base
+ENV PNPM_HOME="/pnpm"
+ENV PATH="$PNPM_HOME:$PATH"
+RUN corepack enable && corepack prepare pnpm@11.21.0 --activate
+WORKDIR /app
+
+FROM base AS dependencies
+COPY package.json pnpm-lock.yaml pnpm-workspace.yaml .npmrc ./
+RUN pnpm install --frozen-lockfile --prod
+
+FROM node:24.19.0-bookworm-slim AS runner
+ENV NODE_ENV=production
+WORKDIR /app
+RUN groupadd --system --gid 1001 nodejs && useradd --system --uid 1001 --gid nodejs worker
+COPY --from=dependencies --chown=worker:nodejs /app/node_modules ./node_modules
+COPY --from=dependencies --chown=worker:nodejs /app/package.json ./package.json
+COPY --chown=worker:nodejs tsconfig.json ./tsconfig.json
+COPY --chown=worker:nodejs src ./src
+COPY --chown=worker:nodejs scripts ./scripts
+USER worker
+CMD ["node", "--import", "tsx", "scripts/integration-worker.ts"]

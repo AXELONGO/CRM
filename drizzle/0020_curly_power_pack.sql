@@ -1,0 +1,1 @@
+ALTER TABLE "inbox_webhook_receipts" ADD COLUMN "key_version" integer DEFAULT 1 NOT NULL;

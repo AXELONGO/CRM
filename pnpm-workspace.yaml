@@ -1,0 +1,11 @@
+allowBuilds:
+  esbuild: true
+  libxmljs2: false
+  unrs-resolver: true
+overrides:
+  lodash: 4.18.1
+minimumReleaseAgeExclude:
+  - "@testing-library/jest-dom@7.0.1"
+  - tsx@4.23.12
+  - imapflow@1.7.0
+  - "@cyclonedx/cyclonedx-npm@6.0.1"
