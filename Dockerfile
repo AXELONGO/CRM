@@ -1,4 +1,4 @@
-FROM node:24.19.0-bookworm-slim AS base
+FROM node:26.7.0-bookworm-slim AS base
 ENV PNPM_HOME="/pnpm"
 ENV PATH="$PNPM_HOME:$PATH"
 RUN corepack enable && corepack prepare pnpm@11.21.0 --activate
@@ -12,7 +12,7 @@ FROM dependencies AS builder
 COPY . .
 RUN pnpm build
 
-FROM node:24.19.0-bookworm-slim AS runner
+FROM node:26.7.0-bookworm-slim AS runner
 ENV NODE_ENV=production
 WORKDIR /app
 RUN groupadd --system --gid 1001 nodejs && useradd --system --uid 1001 --gid nodejs nextjs
